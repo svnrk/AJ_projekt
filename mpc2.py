@@ -1,4 +1,5 @@
 import numpy as np
+from math import sin, cos, tan, atan2, sqrt
 from scipy.optimize import minimize
 import simulator as sim
 
@@ -26,8 +27,8 @@ def distance_to_line_sq(state, waypoint1):
     y0 = state.position.y
     x1 = waypoint1[0]
     y1 = waypoint1[1]
-    x2 = waypoint1[0] + np.cos(waypoint1[2])
-    y2 = waypoint1[1] + np.sin(waypoint1[2])
+    x2 = waypoint1[0] + cos(waypoint1[2])
+    y2 = waypoint1[1] + sin(waypoint1[2])
     return ((x2 - x1) * (y1 - y0) - (x1 - x0) * (y2 - y1))**2 / ((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
@@ -60,10 +61,10 @@ class ModelPredictiveControl:
 
         dir_speed: float = v_t * sim.move_direction(gear_t)
         # Change position
-        x_t += dir_speed * np.cos(fi_t) * ddt
-        y_t += dir_speed * np.sin(fi_t) * ddt
+        x_t += dir_speed * cos(fi_t) * ddt
+        y_t += dir_speed * sin(fi_t) * ddt
         # Change orientation
-        fi_t += dir_speed * np.tan(theta_t) / sim.rig.wheelbase * ddt
+        fi_t += dir_speed * tan(theta_t) / sim.rig.wheelbase * ddt
         theta_t = sim.clamp(theta_t + steering_rate * ddt, -sim.rig.max_abs_steering_angle,
                             sim.rig.max_abs_steering_angle)
         # Change speed
@@ -91,13 +92,14 @@ class ModelPredictiveControl:
             state = self.plant_model(state, dt, u[k*2], u[k*2+1])
 
             # Distance from goal cost
-            distance = ((ref[0] - state.position.x)**2 + abs(ref[1] - state.position.y)**2)**0.5
+            distance_sq = (ref[0] - state.position.x)**2 + abs(ref[1] - state.position.y)**2
+            distance = sqrt(distance_sq)
             cost += (3 * distance)**0.5
 
             # Wrong orientation cost
             delta_fi = ref[2] - state.orientation
-            delta_fi = np.arctan2(np.sin(delta_fi), np.cos(delta_fi))
-            cost += (abs(delta_fi))**0.7 + abs(delta_fi)/3.0
+            delta_fi = atan2(sin(delta_fi), cos(delta_fi))
+            cost += abs(delta_fi)
 
             # Distance from axis-of-goal cost
             cost += 20 * distance_to_line_sq(state, ref)

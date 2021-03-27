@@ -3,6 +3,7 @@ import visualizer
 import mpc2
 import pygame
 import numpy as np
+from math import sin, cos, atan2
 
 active_parking_spot = 1
 recalculate = False
@@ -25,8 +26,6 @@ def controller(x: simulator.State, dt: float, time: float):
                 active_parking_spot = 2
             elif event.key == pygame.K_3:
                 active_parking_spot = 3
-            elif event.key == pygame.K_4:
-                active_parking_spot = 4
             elif event.key == pygame.K_q:
                 running = False
             recalculate = True
@@ -73,13 +72,13 @@ def car_is_in_box(state, ref):
     delta_y = state.position.y - ref[1]
     if delta_x < 0.5 and delta_y < 0.5:
         delta_fi = ref[2] - state.orientation
-        delta_fi = np.arctan2(np.sin(delta_fi), np.cos(delta_fi))
+        delta_fi = atan2(sin(delta_fi), cos(delta_fi))
 
-        hl_1 = half_length * np.cos(delta_fi) + half_width * np.sin(delta_fi)
-        hw_1 = half_width * np.cos(delta_fi) + half_length * np.sin(delta_fi)
+        hl_1 = half_length * cos(delta_fi) + half_width * sin(delta_fi)
+        hw_1 = half_width * cos(delta_fi) + half_length * sin(delta_fi)
 
-        R = np.array(((np.cos(-ref[2]), -np.sin(-ref[2])),
-                      (np.sin(-ref[2]), np.cos(-ref[2]))))
+        R = np.array(((cos(-ref[2]), -sin(-ref[2])),
+                      (sin(-ref[2]),  cos(-ref[2]))))
         delta_1 = R.dot([delta_x, delta_y])
         if abs(delta_1[0]) < 0.9 - hw_1 and abs(delta_1[1]) < 1.175 - hl_1 and delta_fi < 0.411:
             return True

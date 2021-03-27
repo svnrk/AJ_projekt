@@ -1,6 +1,6 @@
 import pygame
-from pygame.locals import *
 import numpy as np
+from math import sin, cos
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -31,8 +31,8 @@ class MyRect:
         self.color = color
 
     def calc_corners(self):
-        R = np.array(((np.cos(self.fi), -np.sin(self.fi)),
-                      (np.sin(self.fi),  np.cos(self.fi))))
+        R = np.array(((cos(self.fi), -sin(self.fi)),
+                      (sin(self.fi),  cos(self.fi))))
 
         self.corner1 = np.array(( self.half_length,  self.half_width))
         self.corner2 = np.array(( self.half_length, -self.half_width))
@@ -53,8 +53,8 @@ class MyRect:
     def display(self, screen, i=None):
 
         pygame.draw.line(screen, self.color, [self.pos_x, self.pos_y],
-                         [self.pos_x + np.cos(self.fi) * self.half_length,
-                          self.pos_y + np.sin(self.fi) * self.half_length], self.line)
+                         [self.pos_x + cos(self.fi) * self.half_length,
+                          self.pos_y + sin(self.fi) * self.half_length], self.line)
         pygame.draw.line(screen, self.color, self.corner1, self.corner2, self.line)
         pygame.draw.line(screen, self.color, self.corner2, self.corner3, self.line)
         pygame.draw.line(screen, self.color, self.corner3, self.corner4, self.line)
