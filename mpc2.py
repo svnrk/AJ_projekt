@@ -102,7 +102,7 @@ class ModelPredictiveControl:
             cost += abs(delta_fi)
 
             # Distance from axis-of-goal cost
-            cost += 20 * distance_to_line_sq(state, ref)
+            cost += 15 * distance_to_line_sq(state, ref)
         return cost
 
     def get_control_signals(self, state, ref, prediction_time_step, recalculate):
@@ -116,8 +116,7 @@ class ModelPredictiveControl:
                               tol=1e-8)
 
         # Recycle optimiser output
-        self.u_in = np.append(u_solution.x, [u_solution.x[-2], u_solution.x[-1]])
-        self.u_in = self.u_in[2:]
+        self.u_in = np.append(u_solution.x[2:], [u_solution.x[-2], u_solution.x[-1]])
 
         # Set gear
         gear = state.gear

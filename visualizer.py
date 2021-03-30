@@ -18,6 +18,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 class MyRect:
     def __init__(self, pos_x, pos_y, fi, width, length, line=1, color=(0, 0, 0)):
         self.pos_x = pos_x + origin_x
+        # Turn coordinates right-handed
         self.pos_y = -pos_y + origin_y
         self.fi = -fi
         self.half_width = width/2.0
