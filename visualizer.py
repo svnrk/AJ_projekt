@@ -31,6 +31,7 @@ class MyRect:
         self.line = line
         self.color = color
 
+    # Rotate rectangle
     def calc_corners(self):
         R = np.array(((cos(self.fi), -sin(self.fi)),
                       (sin(self.fi),  cos(self.fi))))
@@ -45,6 +46,7 @@ class MyRect:
         self.corner3 = R.dot(self.corner3) + np.array((self.pos_x, self.pos_y))
         self.corner4 = R.dot(self.corner4) + np.array((self.pos_x, self.pos_y))
 
+    # Update position and recalculate rectangle
     def update(self, pos_x, pos_y, fi):
         self.pos_x = pos_x + origin_x
         self.pos_y = -pos_y + origin_y
@@ -52,14 +54,17 @@ class MyRect:
         self.calc_corners()
 
     def display(self, screen, i=None):
-
+        # Axis
         pygame.draw.line(screen, self.color, [self.pos_x, self.pos_y],
                          [self.pos_x + cos(self.fi) * self.half_length,
                           self.pos_y + sin(self.fi) * self.half_length], self.line)
+        # Rectangle
         pygame.draw.line(screen, self.color, self.corner1, self.corner2, self.line)
         pygame.draw.line(screen, self.color, self.corner2, self.corner3, self.line)
         pygame.draw.line(screen, self.color, self.corner3, self.corner4, self.line)
         pygame.draw.line(screen, self.color, self.corner4, self.corner1, self.line)
+
+        # Add index on screen
         if i is not None:
             font = pygame.font.Font('freesansbold.ttf', 20)
             text = font.render(str(i), True, BLACK)
@@ -68,8 +73,8 @@ class MyRect:
             screen.blit(text, textRect)
 
 
+# Make car
 car = MyRect(0, 0, fi=0, width=1.2*meter, length=1.75*meter, line=3)
-parking_list = []
 
 
 def make_parking(list_in):
@@ -80,6 +85,7 @@ def make_parking(list_in):
     return p_list
 
 
+parking_list = []
 def visualize(p_list):
     pygame.init()
     # set the pygame window name
@@ -110,8 +116,8 @@ def update(x, y, fi, park_spot, replay=False):
 
     # Draw parking spots
     for i in range(len(parking_list)):
-        if i == park_spot: parking_list[i].color=RED
-        else: parking_list[i].color=BLUE
+        if i == park_spot: parking_list[i].color = RED
+        else: parking_list[i].color = BLUE
         parking_list[i].display(screen, i)
 
     car.update(x*meter, y*meter, fi)
